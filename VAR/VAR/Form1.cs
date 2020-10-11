@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Entity.Core.Common.EntitySql;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
@@ -18,13 +19,13 @@ namespace VAR
         PortfolioEntities context = new PortfolioEntities();
         List<Tick> Ticks;
         List<PortfolioItem> Portfolio = new List<PortfolioItem>();
+
         public Form1()
         {
             InitializeComponent();
             Ticks = context.Ticks.ToList();
             dataGridView1.DataSource = Ticks;
             CreatePortfolio();
-
             List<decimal> Nyereségek = new List<decimal>();
             int intervalum = 30;
             DateTime kezdőDátum = (from x in Ticks select x.TradingDay).Min();
@@ -42,6 +43,7 @@ namespace VAR
                                       orderby x
                                       select x)
                                         .ToList();
+           
             MessageBox.Show(nyereségekRendezve[nyereségekRendezve.Count() / 5].ToString());
 
         }
@@ -67,6 +69,23 @@ namespace VAR
                 value += (decimal)last.Price * item.Volume;
             }
             return value;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "CSV|*.csv";
+            saveFileDialog1.DefaultExt = "csv";
+            saveFileDialog1.Title = "Saving to CSV";
+            saveFileDialog1.FileName = "Nyeresegek.csv";
+            saveFileDialog1.AddExtension = true;
+            
+            if (saveFileDialog1.ShowDialog() != DialogResult.OK) return;
+            using (StreamWriter sw = new StreamWriter(saveFileDialog1.FileName,false,Encoding.UTF8))
+            {
+                sw.Write("Időszak; Nyereség");
+                sw.WriteLine();
+            }
         }
     }
 }
