@@ -10,6 +10,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Xml;
 
 namespace SOAP
@@ -23,22 +24,42 @@ namespace SOAP
             InitializeComponent();
             //GetExchangeRates();
 
-
-
             var mnbService = new MNBArfolyamServiceSoapClient();
             var request = new GetExchangeRatesRequestBody()
             {
                 currencyNames = "EUR",
                 startDate = "2020-01-01",
-                endDate = "2020-06-30"
+                endDate = "2020-10-18"
             };
 
             var response = mnbService.GetExchangeRates(request);
 
             var result = response.GetExchangeRatesResult;
 
+
             dataGridView1.DataSource = Rates;
             XmlProcess(result);
+
+            chartRateData.DataSource = Rates;
+            ChartShow();
+        }
+
+        private void ChartShow()
+        {
+            var series = chartRateData.Series[0];
+            series.ChartType = SeriesChartType.Line;
+            series.XValueMember = "Date";
+            series.YValueMembers = "Value";
+            //Adatsor vastagság kétszeres
+            series.BorderWidth = 2;
+            //Címke nem látszik
+            var legend = chartRateData.Legends[0];
+            legend.Enabled = false;
+            //Vonalak nem látszódnak egyik tengelyen sem + Y tengely nem 0-tól kezdődik
+            var chartArea = chartRateData.ChartAreas[0];
+            chartArea.AxisX.MajorGrid.Enabled = false;
+            chartArea.AxisY.MajorGrid.Enabled = false;
+            chartArea.AxisY.IsStartedFromZero = false;
         }
 
         private void XmlProcess(string result)
@@ -63,7 +84,7 @@ namespace SOAP
             }
         }
 
-        public static void GetExchangeRates()
+        private void GetExchangeRates()
         {
             var mnbService = new MNBArfolyamServiceSoapClient();
             var request = new GetExchangeRatesRequestBody()
