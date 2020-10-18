@@ -24,12 +24,18 @@ namespace SOAP
             InitializeComponent();
             //GetExchangeRates();
 
+            RefreshData();
+        }
+
+        private void RefreshData()
+        {
+            Rates.Clear();
             var mnbService = new MNBArfolyamServiceSoapClient();
             var request = new GetExchangeRatesRequestBody()
             {
-                currencyNames = "EUR",
-                startDate = "2020-01-01",
-                endDate = "2020-10-18"
+                currencyNames = comboBoxCurr.SelectedItem.ToString(),
+                startDate = dtPickerStart.Value.ToString(),
+                endDate = dtPickerEnd.Value.ToString()
             };
 
             var response = mnbService.GetExchangeRates(request);
@@ -84,22 +90,34 @@ namespace SOAP
             }
         }
 
-        private void GetExchangeRates()
+        /*private void GetExchangeRates()
         {
             var mnbService = new MNBArfolyamServiceSoapClient();
             var request = new GetExchangeRatesRequestBody()
             {
-                currencyNames = "EUR",
-                startDate = "2020-01-01",
-                endDate = "2020-06-30"
+                currencyNames = comboBoxCurr.SelectedItem.ToString(),
+                startDate = dtPickerStart.Value.ToString(),
+                endDate = dtPickerEnd.Value.ToString()
             };
 
             var response = mnbService.GetExchangeRates(request);
 
             var result = response.GetExchangeRatesResult;
+        }*/
+
+        private void dtPickerStart_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshData();
         }
 
+        private void dtPickerEnd_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshData();
+        }
 
-
+        private void comboBoxCurr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshData();
+        }
     }
 }
