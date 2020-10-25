@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,26 +18,38 @@ namespace MikroSzim
         List<Person> Population = new List<Person>();
         List<BirthProbability> BirthProbabilities = new List<BirthProbability>();
         List<DeathProbability> DeathProbabilities = new List<DeathProbability>();
+        List<int> men = new List<int>();
+        List<int> women = new List<int>();
         Random rng = new Random(1234);
 
         public Form1()
         {
             InitializeComponent();
-            //ÉLES
-            Population = GetPopulation(@"C:\temp\nép.csv");
-            //TESZT
-            //Population = GetPopulation(@"C:\temp\nép-teszt.csv");
-            BirthProbabilities = GetBirthProbabilities(@"C:\temp\születés.csv");
-            DeathProbabilities = GetDeathProbabilities(@"C:\temp\halál.csv");
+            
+        }
+        private void DisplayResults()
+        {
+            int x = 0;
+            for (int y=2005; y<= finalyearbox.Value; y++)
+            {
+                richTextBox1.AppendText("Szimulációs év: " + y+"\n");
+                richTextBox1.AppendText("\t" + "Fiúk: " + men[x] + "\n");
+                richTextBox1.AppendText("\t" + "Lányok: " + women[x] + "\n");
+                richTextBox1.AppendText("\n");
+                x++;
+            }
+        }
 
-            dataGridView1.DataSource = DeathProbabilities;
-
-            for (int year = 2005; year <= 2024; year++)
+        private void Simulation()
+        {
+            
+            //A záróév mezőben megadott évig fut a szimuláció
+            for (int year = 2005; year <= finalyearbox.Value; year++)
             {
                 // Végigmegyünk az összes személyen
                 for (int i = 0; i < Population.Count; i++)
                 {
-                    SimStep(year, Population[i]); 
+                    SimStep(year, Population[i]);
                 }
 
                 int nbrOfMales = (from x in Population
@@ -47,8 +60,10 @@ namespace MikroSzim
                                     select x).Count();
                 Console.WriteLine(
                     string.Format("Év:{0} Fiúk:{1} Lányok:{2}", year, nbrOfMales, nbrOfFemales));
+                men.Add(nbrOfMales);
+                women.Add(nbrOfFemales);
+                
             }
-
         }
 
         public List<Person> GetPopulation(string csvpath)
@@ -137,6 +152,29 @@ namespace MikroSzim
                     ujszulott.NbrOfChildren = 0;
                     ujszulott.Gender = (Gender)(rng.Next(1, 3));
                     Population.Add(ujszulott);
+                }
+            }
+        }
+        //Szimuláció indítása
+        private void Startbt_Click(object sender, EventArgs e)
+        {
+            Population = GetPopulation(pathtb.Text);
+            BirthProbabilities = GetBirthProbabilities(@"C:\temp\születés.csv");
+            DeathProbabilities = GetDeathProbabilities(@"C:\temp\halál.csv");
+            Simulation();
+            DisplayResults();
+        }
+
+        private void Browsebt_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog OFD = new OpenFileDialog())
+            {
+                OFD.InitialDirectory = "c:\\temp";
+                OFD.Filter = "CSV files (*.csv)|*.csv|All files|*.*";
+
+                if (OFD.ShowDialog()==DialogResult.OK)
+                {
+                    pathtb.Text = OFD.FileName;
                 }
             }
         }
