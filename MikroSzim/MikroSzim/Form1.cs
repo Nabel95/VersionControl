@@ -22,11 +22,33 @@ namespace MikroSzim
         public Form1()
         {
             InitializeComponent();
-            Population = GetPopulation(@"C:\temp\nép-teszt.csv");
+            //ÉLES
+            Population = GetPopulation(@"C:\temp\nép.csv");
+            //TESZT
+            //Population = GetPopulation(@"C:\temp\nép-teszt.csv");
             BirthProbabilities = GetBirthProbabilities(@"C:\temp\születés.csv");
             DeathProbabilities = GetDeathProbabilities(@"C:\temp\halál.csv");
 
             dataGridView1.DataSource = DeathProbabilities;
+
+            for (int year = 2005; year <= 2024; year++)
+            {
+                // Végigmegyünk az összes személyen
+                for (int i = 0; i < Population.Count; i++)
+                {
+                    SimStep(year, Population[i]); 
+                }
+
+                int nbrOfMales = (from x in Population
+                                  where x.Gender == Gender.Male && x.IsAlive
+                                  select x).Count();
+                int nbrOfFemales = (from x in Population
+                                    where x.Gender == Gender.Female && x.IsAlive
+                                    select x).Count();
+                Console.WriteLine(
+                    string.Format("Év:{0} Fiúk:{1} Lányok:{2}", year, nbrOfMales, nbrOfFemales));
+            }
+
         }
 
         public List<Person> GetPopulation(string csvpath)
@@ -87,6 +109,36 @@ namespace MikroSzim
                 }
             }
             return deathProbabilities;
+        }
+
+        private void SimStep(int year, Person person)
+        {
+            if (!person.IsAlive) return;
+
+            byte age = (byte)(year - person.BirthYear);
+
+            double PDeath = (from x in DeathProbabilities
+                             where x.Gender == person.Gender && x.Age == age
+                             select x.P).FirstOrDefault();
+            //Meghalt a személy?
+            if (rng.NextDouble() <= PDeath)
+                person.IsAlive = false;
+
+            if (person.IsAlive && person.Gender == Gender.Female)
+            {
+                double PBirth = (from x in BirthProbabilities
+                                 where x.Age == age
+                                 select x.P).FirstOrDefault();
+                //Születik gyerek?
+                if (rng.NextDouble() <= PBirth)
+                {
+                    Person ujszulott = new Person();
+                    ujszulott.BirthYear = year;
+                    ujszulott.NbrOfChildren = 0;
+                    ujszulott.Gender = (Gender)(rng.Next(1, 3));
+                    Population.Add(ujszulott);
+                }
+            }
         }
     }
 }
