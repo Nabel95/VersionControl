@@ -35,6 +35,7 @@
             this.btnSelectCar = new System.Windows.Forms.Button();
             this.btnSelectBall = new System.Windows.Forms.Button();
             this.label = new System.Windows.Forms.Label();
+            this.btnColor = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // mainPanel
@@ -79,17 +80,28 @@
             // label
             // 
             this.label.AutoSize = true;
-            this.label.Location = new System.Drawing.Point(302, 35);
+            this.label.Location = new System.Drawing.Point(385, 35);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(101, 20);
             this.label.TabIndex = 3;
             this.label.Text = "Coming next:";
+            // 
+            // btnColor
+            // 
+            this.btnColor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnColor.Location = new System.Drawing.Point(129, 85);
+            this.btnColor.Name = "btnColor";
+            this.btnColor.Size = new System.Drawing.Size(111, 28);
+            this.btnColor.TabIndex = 4;
+            this.btnColor.UseVisualStyleBackColor = false;
+            this.btnColor.Click += new System.EventHandler(this.btnColor_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnColor);
             this.Controls.Add(this.label);
             this.Controls.Add(this.btnSelectBall);
             this.Controls.Add(this.btnSelectCar);
@@ -110,6 +122,7 @@
         private System.Windows.Forms.Button btnSelectCar;
         private System.Windows.Forms.Button btnSelectBall;
         private System.Windows.Forms.Label label;
+        private System.Windows.Forms.Button btnColor;
     }
 }
 
