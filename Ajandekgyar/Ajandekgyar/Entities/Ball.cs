@@ -14,7 +14,7 @@ namespace Ajandekgyar.Entities
         {
             AutoSize = false;
             Width = 50;
-            Height = 50;
+            Height = Width;
             Paint += Ball_Paint;
         }
 
