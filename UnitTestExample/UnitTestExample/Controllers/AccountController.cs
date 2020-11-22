@@ -50,6 +50,9 @@ namespace UnitTestExample.Controllers
 
         public bool ValidatePassword(string password)
         {
+            Regex regex = new Regex("^[A-Za-z0-9].{7,}$");
+            //bool validpwd = false;
+
             return true;
         }
     }
