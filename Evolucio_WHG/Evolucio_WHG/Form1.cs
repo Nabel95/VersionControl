@@ -21,6 +21,8 @@ namespace Evolucio_WHG
         int nbrOfStepsIncrement = 10;
         int generation = 1;
 
+        Brain winnerBrain = null;
+
         public Form1()
         {
             InitializeComponent();
@@ -45,6 +47,16 @@ namespace Evolucio_WHG
                              orderby p.GetFitness() descending
                              select p;
             var topPerformers = playerList.Take(populationSize / 2).ToList();
+            //Győztes keresése, találat esetén folyamat leállítása
+            var winners = from p in topPerformers
+                          where p.IsWinner
+                          select p;
+            if (winners.Count() > 0)
+            {
+                winnerBrain = winners.FirstOrDefault().Brain.Clone();
+                gc.GameOver -= Gc_GameOver;
+                return;
+            }
             //Új generáció - szint előlről kezdése
             gc.ResetCurrentLevel();
             foreach (var p in topPerformers)
