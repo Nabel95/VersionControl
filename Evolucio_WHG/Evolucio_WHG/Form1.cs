@@ -55,8 +55,10 @@ namespace Evolucio_WHG
             {
                 winnerBrain = winners.FirstOrDefault().Brain.Clone();
                 gc.GameOver -= Gc_GameOver;
+                button1.Visible = true;
                 return;
             }
+
             //Új generáció - szint előlről kezdése
             gc.ResetCurrentLevel();
             foreach (var p in topPerformers)
@@ -72,7 +74,17 @@ namespace Evolucio_WHG
                 else
                     gc.AddPlayer(b.Mutate());
             }
+           
             gc.Start();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            gc.ResetCurrentLevel();
+            gc.AddPlayer(winnerBrain.Clone());
+            gc.AddPlayer();
+            ga.Focus();
+            gc.Start(true);
         }
     }
 }
